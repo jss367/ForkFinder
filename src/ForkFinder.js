@@ -11,9 +11,33 @@ const ForkFinder = () => {
     setLoading(true);
     setError('');
     try {
+      console.log(`Fetching forks for repository: ${repo}`);
       const response = await fetch(`https://api.github.com/repos/${repo}/forks?sort=stargazers&per_page=100`);
-      if (!response.ok) throw new Error('Repository not found or API limit reached');
+      console.log(`Response status: ${response.status}`);
+      
+      if (response.status === 404) {
+        throw new Error('Repository not found. Please check if the repository name is correct and the repository is public.');
+      } else if (response.status === 403) {
+        const rateLimitResponse = await fetch('https://api.github.com/rate_limit');
+        const rateLimitData = await rateLimitResponse.json();
+        console.log('Rate limit data:', rateLimitData);
+        const resetTime = new Date(rateLimitData.rate.reset * 1000).toLocaleTimeString();
+        throw new Error(`API rate limit reached. Limit resets at ${resetTime}. Please try again after this time.`);
+      } else if (response.status === 301) {
+        throw new Error('The repository has been moved permanently. Please check the new location.');
+      } else if (response.status === 401) {
+        throw new Error('Authentication error. Please check your credentials if you\'re using any.');
+      } else if (!response.ok) {
+        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
+      console.log(`Fetched ${data.length} forks`);
+
+      if (data.length === 0) {
+        throw new Error('No forks found for this repository.');
+      }
+
       const detailedForks = await Promise.all(data.map(async fork => {
         const detailsResponse = await fetch(fork.url);
         const details = await detailsResponse.json();
@@ -28,6 +52,7 @@ const ForkFinder = () => {
       }));
       setForks(detailedForks);
     } catch (err) {
+      console.error('Error fetching forks:', err);
       setError(err.message);
     } finally {
       setLoading(false);
