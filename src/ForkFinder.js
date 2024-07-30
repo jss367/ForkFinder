@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ArrowUpDown } from 'lucide-react';
 
 const ForkFinder = () => {
   const [repo, setRepo] = useState('');
@@ -47,12 +48,16 @@ const ForkFinder = () => {
           forks: details.forks_count,
           lastUpdated: new Date(details.updated_at),
           url: fork.html_url,
-          description: details.description
+          description: details.description,
+          openIssues: details.open_issues_count,
+          watchers: details.watchers_count,
+          createdAt: new Date(details.created_at),
+          size: details.size,
+          language: details.language
         };
       }));
       setForks(detailedForks);
     } catch (err) {
-      console.error('Error fetching forks:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -73,7 +78,7 @@ const ForkFinder = () => {
   };
 
   return (
-    <div style={{ padding: '1rem', maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{ padding: '1rem', maxWidth: '1200px', margin: '0 auto' }}>
       <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>ForkFinder</h1>
       <p style={{ marginBottom: '1rem' }}>Analyze and explore GitHub repository forks with ease.</p>
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -90,40 +95,62 @@ const ForkFinder = () => {
       </div>
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
       {forks.length > 0 && (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th onClick={() => sortForks('name')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
-                Fork Name ↕
-              </th>
-              <th onClick={() => sortForks('stars')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
-                Stars ↕
-              </th>
-              <th onClick={() => sortForks('forks')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
-                Forks ↕
-              </th>
-              <th onClick={() => sortForks('lastUpdated')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
-                Last Updated ↕
-              </th>
-              <th style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {forks.map((fork) => (
-              <tr key={fork.name}>
-                <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
-                  <a href={fork.url} target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc', textDecoration: 'none' }}>
-                    {fork.name}
-                  </a>
-                </td>
-                <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.stars}</td>
-                <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.forks}</td>
-                <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.lastUpdated.toLocaleDateString()}</td>
-                <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.description}</td>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th onClick={() => sortForks('name')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
+                  Fork Name <ArrowUpDown size={16} />
+                </th>
+                <th onClick={() => sortForks('stars')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
+                  Stars <ArrowUpDown size={16} />
+                </th>
+                <th onClick={() => sortForks('forks')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
+                  Forks <ArrowUpDown size={16} />
+                </th>
+                <th onClick={() => sortForks('lastUpdated')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
+                  Last Updated <ArrowUpDown size={16} />
+                </th>
+                <th onClick={() => sortForks('openIssues')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
+                  Open Issues <ArrowUpDown size={16} />
+                </th>
+                <th onClick={() => sortForks('watchers')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
+                  Watchers <ArrowUpDown size={16} />
+                </th>
+                <th onClick={() => sortForks('createdAt')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
+                  Created At <ArrowUpDown size={16} />
+                </th>
+                <th onClick={() => sortForks('size')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
+                  Size (KB) <ArrowUpDown size={16} />
+                </th>
+                <th onClick={() => sortForks('language')} style={{ cursor: 'pointer', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
+                  Language <ArrowUpDown size={16} />
+                </th>
+                <th style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>Description</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {forks.map((fork) => (
+                <tr key={fork.name}>
+                  <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>
+                    <a href={fork.url} target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc', textDecoration: 'none' }}>
+                      {fork.name}
+                    </a>
+                  </td>
+                  <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.stars}</td>
+                  <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.forks}</td>
+                  <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.lastUpdated.toLocaleDateString()}</td>
+                  <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.openIssues}</td>
+                  <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.watchers}</td>
+                  <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.createdAt.toLocaleDateString()}</td>
+                  <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.size}</td>
+                  <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.language}</td>
+                  <td style={{ padding: '0.5rem', borderBottom: '1px solid #ddd' }}>{fork.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
