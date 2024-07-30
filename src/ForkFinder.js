@@ -8,14 +8,24 @@ const ForkFinder = () => {
   const [error, setError] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
+  const parseRepoInput = (input) => {
+    const githubUrlRegex = /^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/?$/;
+    const match = input.match(githubUrlRegex);
+    if (match) {
+      return `${match[1]}/${match[2]}`;
+    }
+    return input; // If it's already in the format username/repository, return as is
+  };
+
   const fetchForks = async () => {
     setLoading(true);
     setError('');
+    const parsedRepo = parseRepoInput(repo);
     try {
-      console.log(`Fetching forks for repository: ${repo}`);
-      const response = await fetch(`https://api.github.com/repos/${repo}/forks?sort=stargazers&per_page=100`);
+      console.log(`Fetching forks for repository: ${parsedRepo}`);
+      const response = await fetch(`https://api.github.com/repos/${parsedRepo}/forks?sort=stargazers&per_page=100`);
       console.log(`Response status: ${response.status}`);
-      
+
       if (response.status === 404) {
         throw new Error('Repository not found. Please check if the repository name is correct and the repository is public.');
       } else if (response.status === 403) {
@@ -80,13 +90,13 @@ const ForkFinder = () => {
   return (
     <div style={{ padding: '1rem', maxWidth: '1200px', margin: '0 auto' }}>
       <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>ForkFinder</h1>
-      <p style={{ marginBottom: '1rem' }}>Analyze and explore GitHub repository forks with ease.</p>
+      <p style={{ marginBottom: '1rem' }}>Analyze and explore GitHub repository forks</p>
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
         <input
           type="text"
           value={repo}
           onChange={(e) => setRepo(e.target.value)}
-          placeholder="Enter GitHub repo (e.g., username/repository)"
+          placeholder="Enter GitHub repo URL or username/repository"
           style={{ flexGrow: 1, padding: '0.5rem' }}
         />
         <button onClick={fetchForks} disabled={loading} style={{ padding: '0.5rem 1rem', backgroundColor: '#0066cc', color: 'white', border: 'none', borderRadius: '4px' }}>
