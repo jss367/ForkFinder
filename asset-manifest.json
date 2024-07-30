@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/ForkFinder/static/css/main.e6c13ad2.css",
+    "main.js": "/ForkFinder/static/js/main.2ec8e83d.js",
+    "static/js/453.70752803.chunk.js": "/ForkFinder/static/js/453.70752803.chunk.js",
+    "index.html": "/ForkFinder/index.html",
+    "main.e6c13ad2.css.map": "/ForkFinder/static/css/main.e6c13ad2.css.map",
+    "main.2ec8e83d.js.map": "/ForkFinder/static/js/main.2ec8e83d.js.map",
+    "453.70752803.chunk.js.map": "/ForkFinder/static/js/453.70752803.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.2ec8e83d.js"
+  ]
+}
